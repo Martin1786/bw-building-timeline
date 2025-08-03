@@ -264,6 +264,8 @@ body {
     stroke-opacity: 0.8;
 }
 
+
+
 .building-card {
     stroke-width: 2;
     rx: 6;
@@ -275,7 +277,7 @@ body {
 }
 
 .building-card:hover ~ .event-connection {
-    stroke-width: 3;
+    stroke-width: 10;
     opacity: 1;
 }
 
