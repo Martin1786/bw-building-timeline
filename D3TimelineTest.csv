@@ -1,0 +1,54 @@
+building_name,address,side,type,year,event_type,description
+Smith's Bakery,45 Main St,left,grocery,1920,construction,Original bakery built
+Smith's Bakery,45 Main St,left,grocery,1945,ownership,Sold to Johnson family
+Smith's Bakery,45 Main St,left,grocery,1967,renovation,Added modern ovens
+Old Town Hall,12 City Square,right,residential,1885,construction,Built as municipal building
+Old Town Hall,12 City Square,right,residential,1960,use_change,Converted to apartments
+First National Bank,125 Main St,left,bank,1925,construction,Original bank building constructed with marble facade
+First National Bank,125 Main St,left,bank,1943,damage,Fire damage to second floor from electrical fault
+First National Bank,125 Main St,left,bank,1945,renovation,Complete interior renovation after fire damage
+First National Bank,125 Main St,left,bank,1967,ownership,Acquired by Regional Trust Company
+Murphy's Corner Store,142 Main St,right,grocery,1922,construction,Original grocery store with wooden shelving
+Murphy's Corner Store,142 Main St,right,grocery,1935,renovation,Added refrigeration units and expanded storage
+Murphy's Corner Store,142 Main St,right,grocery,1955,ownership,Sold to Wilson Brothers chain
+Murphy's Corner Store,142 Main St,right,grocery,1978,use_change,Converted to modern supermarket layout
+Victorian Family Home,158 Oak Ave,left,residential,1928,construction,Three-story Victorian with wraparound porch
+Victorian Family Home,158 Oak Ave,left,residential,1952,renovation,Added modern kitchen and central heating
+Victorian Family Home,158 Oak Ave,left,residential,1975,ownership,Inherited by Thompson family descendants
+Victorian Family Home,158 Oak Ave,left,residential,1995,damage,Roof damage from severe storm
+Grand Hotel,175 Main St,right,inn,1923,construction,Luxury hotel with 45 rooms and dining hall
+Grand Hotel,175 Main St,right,inn,1941,damage,Basement flooding during spring floods
+Grand Hotel,175 Main St,right,inn,1968,renovation,Complete modernization with new plumbing
+Grand Hotel,175 Main St,right,inn,1990,use_change,Converted to residential apartments
+Johnson Hardware,89 Commerce St,left,hardware,1931,construction,Built as full-service hardware store
+Johnson Hardware,89 Commerce St,left,hardware,1956,renovation,Expanded to include garden center
+Johnson Hardware,89 Commerce St,left,hardware,1982,ownership,Purchased by Home Supply Co-op
+Johnson Hardware,89 Commerce St,left,hardware,2001,damage,Water damage from burst pipes
+Majestic Theatre,201 Broadway,right,theatre,1927,construction,Art Deco movie palace with 800 seats
+Majestic Theatre,201 Broadway,right,theatre,1954,renovation,Installed new projection equipment
+Majestic Theatre,201 Broadway,right,theatre,1979,damage,Fire in projection booth
+Majestic Theatre,201 Broadway,right,theatre,1998,use_change,Converted to live performance venue
+Schmidt's Butcher Shop,67 Market St,left,butcher,1930,construction,Traditional butcher shop with cold storage
+Schmidt's Butcher Shop,67 Market St,left,butcher,1947,renovation,Added modern refrigeration systems
+Schmidt's Butcher Shop,67 Market St,left,butcher,1963,ownership,Sold to Miller family
+Schmidt's Butcher Shop,67 Market St,left,butcher,1987,use_change,Became specialty deli and sandwich shop
+Elegant Fashions,134 Main St,right,clothing,1926,construction,Women's clothing boutique with display windows
+Elegant Fashions,134 Main St,right,clothing,1949,renovation,Modernized fitting rooms and lighting
+Elegant Fashions,134 Main St,right,clothing,1971,ownership,Purchased by Fashion Forward chain
+Elegant Fashions,134 Main St,right,clothing,1994,use_change,Expanded to include men's clothing
+Central Coffee House,78 Main St,left,coffee,1933,construction,Original coffee roastery and cafe
+Central Coffee House,78 Main St,left,coffee,1958,renovation,Added espresso machine and expanded seating
+Central Coffee House,78 Main St,left,coffee,1983,ownership,Taken over by local coffee collective
+Central Coffee House,78 Main St,left,coffee,2005,damage,Kitchen fire required complete renovation
+Miller's Pharmacy,156 Elm St,right,pharmacy,1929,construction,Full-service pharmacy with soda fountain
+Miller's Pharmacy,156 Elm St,right,pharmacy,1951,renovation,Modernized prescription area
+Miller's Pharmacy,156 Elm St,right,pharmacy,1976,ownership,Acquired by Chain Drug Stores Inc
+Miller's Pharmacy,156 Elm St,right,pharmacy,1992,use_change,Removed soda fountain for more retail space
+Rose Garden Florist,92 Spring St,left,florist,1935,construction,Flower shop with greenhouse attachment
+Rose Garden Florist,92 Spring St,left,florist,1962,renovation,Expanded greenhouse and added climate control
+Rose Garden Florist,92 Spring St,left,florist,1988,ownership,Purchased by Garden Center Corporation
+Rose Garden Florist,92 Spring St,left,florist,2010,damage,Greenhouse damaged by hail storm
+O'Malley's Tavern,203 Water St,right,tavern,1924,construction,Irish pub with carved wooden bar
+O'Malley's Tavern,203 Water St,right,tavern,1948,renovation,Added kitchen for full meals
+O'Malley's Tavern,203 Water St,right,tavern,1965,ownership,Inherited by O'Malley sons
+O'Malley's Tavern,203 Water St,right,tavern,1989,damage,Bar damaged in altercation

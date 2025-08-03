@@ -1,0 +1,33 @@
+building_name,address,side,type,year,event_type,description
+First National Bank,125 Main St,left,bank,1925,renovation,Art Deco facade renovation - $15000
+First National Bank,125 Main St,left,bank,1943,damage,Fire damage to second floor
+First National Bank,125 Main St,left,bank,1945,ownership,Sold to Thompson Family for $12000
+Murphy's Corner Store,142 Main St,right,grocery,1922,construction,Original construction completed
+Murphy's Corner Store,142 Main St,right,grocery,1935,renovation,Storefront expansion
+Murphy's Corner Store,142 Main St,right,grocery,1955,ownership,Purchased by Wilson Brothers
+Victorian Mansion,158 Main St,left,residential,1928,renovation,Added electricity and plumbing
+Victorian Mansion,158 Main St,left,residential,1960,ownership,Donated to St. Mary's Church
+Victorian Mansion,158 Main St,left,residential,1985,ownership,Sold to Residential Trust
+Grand Hotel,175 Main St,right,inn,1923,construction,Grand opening as luxury hotel
+Grand Hotel,175 Main St,right,inn,1968,damage,Kitchen fire - dining room closed
+Grand Hotel,175 Main St,right,inn,1990,use_change,Converted to apartments
+Mystical Emporium,201 Main St,left,magic_shop,1932,construction,Opened as occult bookshop
+Mystical Emporium,201 Main St,left,magic_shop,1967,renovation,Added crystal and tarot section
+Mystical Emporium,201 Main St,left,magic_shop,1985,ownership,Inherited by daughter
+Second Chance Shop,218 Main St,right,charity_shop,1975,construction,Opened by local church
+Second Chance Shop,218 Main St,right,charity_shop,1992,renovation,Expanded donation sorting area
+MacLeod's Fish Market,235 Main St,left,fishmonger,1928,construction,Built with ice storage
+MacLeod's Fish Market,235 Main St,left,fishmonger,1954,renovation,Added refrigerated display cases
+MacLeod's Fish Market,235 Main St,left,fishmonger,1978,ownership,Sold to coastal fishing company
+Royal Mail Office,252 Main St,right,post_office,1924,construction,Built as main postal facility
+Royal Mail Office,252 Main St,right,post_office,1963,renovation,Added parcel sorting area
+Royal Mail Office,252 Main St,right,post_office,1998,use_change,Downsized to sub-post office
+Vintners Wine Shop,269 Main St,left,wine_merchant,1961,construction,Opened as wine specialist
+Vintners Wine Shop,269 Main St,left,wine_merchant,1984,renovation,Added wine cellar storage
+Vintners Wine Shop,269 Main St,left,wine_merchant,2003,renovation,Became wine bar and shop
+Curl Up & Dye,286 Main St,right,hairdresser,1955,construction,Opened as ladies salon
+Curl Up & Dye,286 Main St,right,hairdresser,1973,renovation,Added mens barbering section
+Curl Up & Dye,286 Main St,right,hairdresser,1995,renovation,Full unisex salon renovation
+Dr. Harrison Dental,303 Main St,left,dentist,1949,construction,Built as modern dental practice
+Dr. Harrison Dental,303 Main St,left,dentist,1977,renovation,Added X-ray equipment
+Dr. Harrison Dental,303 Main St,left,dentist,2001,ownership,Sold to dental group practice 

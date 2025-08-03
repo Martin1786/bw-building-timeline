@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Building Timeline</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="config.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Hamburger Menu Button -->
+    <button class="hamburger-menu" id="hamburgerMenu" aria-label="Open instructions menu">
+        <div class="hamburger-line"></div>
+        <div class="hamburger-line"></div>
+        <div class="hamburger-line"></div>
+    </button>
+
+    <!-- Side Drawer Overlay -->
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+
+    <!-- Side Drawer -->
+    <div class="side-drawer" id="sideDrawer">
+        <div class="drawer-header">
+            <h2 class="drawer-title">Instructions</h2>
+            <button class="close-drawer" id="closeDrawer">&times;</button>
+        </div>
+        
+        <div class="instructions">
+            <h3>How to add your own buildings:</h3>
+            <p><strong>Option 1: Upload CSV File</strong></p>
+            <p>Create a CSV file with your building data using this format:</p>
+            <div class="csv-format">building_name,address,side,type,year,event_type,description
+First National Bank,125 Main St,left,bank,1925,renovation,Art Deco facade renovation
+First National Bank,125 Main St,left,bank,1943,damage,Fire damage to second floor
+Murphy's Store,142 Main St,right,grocery,1922,construction,Original construction completed</div>
+            
+            <p><strong>Required columns:</strong></p>
+            <ul>
+                <li><strong>building_name:</strong> Name of the building</li>
+                <li><strong>address:</strong> Street address</li>
+                <li><strong>side:</strong> "left" or "right" (which side of timeline)</li>
+                <li><strong>type:</strong> bank, grocery, residential, inn, hardware, theatre, butcher, clothing, coffee, pharmacy, florist, tavern, magic_shop, charity_shop, fishmonger, post_office, wine_merchant, hairdresser, dentist</li>
+                <li><strong>year:</strong> Year of the event (1900-2025)</li>
+                <li><strong>event_type:</strong> construction, renovation, ownership, damage, use_change</li>
+                <li><strong>description:</strong> Description of what happened</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="title">BW Building TimeLine</div>
+        <div class="subtitle">Upload your building data or use sample data</div>
+        
+        <div class="legend" id="legend" style="display: none;">
+            <div class="legend-item">
+                <div class="legend-dot" style="background-color: #38a169;"></div>
+                <span>Renovation</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background-color: #d69e2e;"></div>
+                <span>Ownership Change</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background-color: #e53e3e;"></div>
+                <span>Major Damage</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background-color: #805ad5;"></div>
+                <span>Use Change</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background-color: #3182ce;"></div>
+                <span>Construction</span>
+            </div>
+        </div>
+        
+        <div class="timeline-container" id="timelineContainer">
+            <svg id="timeline"></svg>
+        </div>
+        
+        <div class="scroll-hint" id="scrollHint" style="display: none;">↕ Scroll to explore different decades</div>
+        
+        <div class="data-input">
+            <h4>Load Data</h4>
+            <input type="file" id="csvFile" class="file-input" accept=".csv" />
+            <button onclick="loadCSV()" class="load-button">Load CSV</button>
+            <button onclick="loadSampleData()" class="sample-button">Sample</button>
+            <div id="errorMessage"></div>
+        </div>
+        
+        <div class="tooltip" id="tooltip"></div>
+    </div>
+
+    <script>
+        // Drawer functionality
+        const hamburgerMenu = document.getElementById('hamburgerMenu');
+        const sideDrawer = document.getElementById('sideDrawer');
+        const drawerOverlay = document.getElementById('drawerOverlay');
+        const closeDrawer = document.getElementById('closeDrawer');
+
+        function toggleDrawer() {
+            hamburgerMenu.classList.toggle('active');
+            sideDrawer.classList.toggle('open');
+            drawerOverlay.classList.toggle('open');
+        }
+
+        function closeDrawerFunc() {
+            hamburgerMenu.classList.remove('active');
+            sideDrawer.classList.remove('open');
+            drawerOverlay.classList.remove('open');
+        }
+
+        hamburgerMenu.addEventListener('click', toggleDrawer);
+        closeDrawer.addEventListener('click', closeDrawerFunc);
+        drawerOverlay.addEventListener('click', closeDrawerFunc);
+
+        // Close drawer on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeDrawerFunc();
+            }
+        });
+
+        // Configuration loaded from config.js
+
+        let currentData = null;
+
+        function showError(message) {
+            document.getElementById('errorMessage').innerHTML = 
+                `<div class="error-message">${message}</div>`;
+        }
+
+        function clearError() {
+            document.getElementById('errorMessage').innerHTML = '';
+        }
+
+        function loadCSV() {
+            const fileInput = document.getElementById('csvFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showError('Please select a CSV file first.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const csv = e.target.result;
+                    const results = Papa.parse(csv, {
+                        header: true,
+                        dynamicTyping: true,
+                        skipEmptyLines: true,
+                        transformHeader: header => header.trim().toLowerCase()
+                    });
+
+                    if (results.errors.length > 0) {
+                        showError('CSV parsing errors: ' + results.errors.map(e => e.message).join(', '));
+                        return;
+                    }
+
+                    const buildingData = processCSVData(results.data);
+                    if (buildingData.length > 0) {
+                        clearError();
+                        renderTimeline(buildingData);
+                    }
+                } catch (error) {
+                    showError('Error processing CSV file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function processCSVData(csvData) {
+            const buildingsMap = new Map();
+            
+            csvData.forEach(row => {
+                // Validate required fields
+                const missingFields = validationRules.requiredFields.filter(field => !row[field]);
+                if (missingFields.length > 0) {
+                    console.warn('Skipping row with missing required fields:', missingFields, row);
+                    return;
+                }
+
+                // Validate building type
+                if (!validationRules.validBuildingTypes.includes(row.type)) {
+                    console.warn(`Unknown building type: ${row.type}. Using 'residential' as default.`);
+                    row.type = 'residential';
+                }
+
+                // Validate event type
+                if (!validationRules.validEventTypes.includes(row.event_type)) {
+                    console.warn(`Unknown event type: ${row.event_type}. Using 'renovation' as default.`);
+                    row.event_type = 'renovation';
+                }
+
+                const buildingKey = `${row.building_name}_${row.address}`;
+                
+                if (!buildingsMap.has(buildingKey)) {
+                    buildingsMap.set(buildingKey, {
+                        name: row.building_name,
+                        address: row.address,
+                        side: row.side,
+                        type: row.type,
+                        events: []
+                    });
+                }
+                
+                buildingsMap.get(buildingKey).events.push({
+                    year: parseInt(row.year),
+                    type: row.event_type,
+                    description: row.description || `${row.event_type} event`
+                });
+            });
+
+            // Convert map to array and sort events by year
+            const buildings = Array.from(buildingsMap.values());
+            buildings.forEach(building => {
+                building.events.sort((a, b) => a.year - b.year);
+            });
+
+            if (buildings.length === 0) {
+                showError('No valid building data found in CSV file. Please check the format.');
+            }
+
+            return buildings;
+        }
+
+        function loadSampleData() {
+            fetch('sample_data.csv')
+                .then(response => response.text())
+                .then(csv => {
+                    const results = Papa.parse(csv, {
+                        header: true,
+                        dynamicTyping: true,
+                        skipEmptyLines: true,
+                        transformHeader: header => header.trim().toLowerCase()
+                    });
+
+                    const buildingData = processCSVData(results.data);
+                    clearError();
+                    renderTimeline(buildingData);
+                })
+                .catch(error => {
+                    showError('Error loading sample data: ' + error.message);
+                });
+        }
+
+        function renderTimeline(buildingData) {
+            currentData = buildingData;
+            
+            // Show timeline elements
+            document.getElementById('legend').style.display = 'flex';
+            document.getElementById('timelineContainer').style.display = 'block';
+            document.getElementById('scrollHint').style.display = 'block';
+
+            // Clear previous timeline
+            d3.select("#timeline").selectAll("*").remove();
+
+            // Set up dimensions
+            const margin = timelineConfig.margin;
+            const width = 900 - margin.left - margin.right;
+            const height = Math.max(1200, buildingData.length * 100 + 400);
+            const centerX = width / 2;
+            const cardWidth = timelineConfig.cardWidth;
+            const cardHeight = timelineConfig.cardHeight;
+
+            // Create SVG
+            const svg = d3.select("#timeline")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.bottom + margin.top);
+
+            const g = svg.append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // Find year range from data
+            const allYears = buildingData.flatMap(b => b.events.map(e => e.year));
+            const minYear = Math.min(...allYears);
+            const maxYear = Math.max(...allYears);
+            const startYear = Math.floor(minYear / 10) * 10;
+            const endYear = Math.ceil(maxYear / 10) * 10;
+
+            // Create scales
+            const yScale = d3.scaleLinear()
+                .domain([startYear, endYear])
+                .range([50, height - 50]);
+
+            // Draw central timeline spine
+            g.append("line")
+                .attr("class", "timeline-spine")
+                .attr("x1", centerX)
+                .attr("x2", centerX)
+                .attr("y1", yScale(startYear))
+                .attr("y2", yScale(endYear));
+
+            // Add decade markers and labels
+            const decades = d3.range(startYear, endYear + 1, 10);
+            decades.forEach(decade => {
+                g.append("line")
+                    .attr("class", "decade-marker")
+                    .attr("x1", centerX - timelineConfig.decadeMarkerLength)
+                    .attr("x2", centerX + timelineConfig.decadeMarkerLength)
+                    .attr("y1", yScale(decade))
+                    .attr("y2", yScale(decade));
+                
+                g.append("text")
+                    .attr("class", "decade-label")
+                    .attr("x", centerX)
+                    .attr("y", yScale(decade) - 10)
+                    .text(`${decade}s`);
+            });
+
+            // Position buildings alternately on left and right
+            buildingData.forEach((building, index) => {
+                const isLeft = building.side === "left";
+                const cardX = isLeft ? centerX - cardWidth - 100 : centerX + 100;
+                const cardY = yScale(startYear) + (index * 90) + 80;
+                const buildingColor = buildingTypeColors[building.type];
+                
+                // No horizontal connector line needed
+
+                // Draw building card
+                const buildingCard = g.append("rect")
+                    .attr("class", "building-card")
+                    .attr("x", cardX)
+                    .attr("y", cardY)
+                    .attr("width", cardWidth)
+                    .attr("height", cardHeight)
+                    .attr("fill", buildingColor)
+                    .attr("fill-opacity", 0.15)
+                    .attr("stroke", buildingColor)
+                    .attr("data-building-index", index);
+
+                // Add building icon
+                g.append("text")
+                    .attr("class", "building-icon")
+                    .attr("x", cardX + 25)
+                    .attr("y", cardY + cardHeight/2)
+                    .text(buildingIcons[building.type]);
+
+                // Add building name
+                g.append("text")
+                    .attr("class", "building-name")
+                    .attr("x", cardX + 45)
+                    .attr("y", cardY + 20)
+                    .text(building.name);
+
+                // Add building address
+                g.append("text")
+                    .attr("class", "building-address")
+                    .attr("x", cardX + 45)
+                    .attr("y", cardY + 35)
+                    .text(building.address);
+
+                // Add building type label
+                g.append("text")
+                    .attr("class", "building-address")
+                    .attr("x", cardX + 45)
+                    .attr("y", cardY + 48)
+                    .attr("font-weight", "500")
+                    .attr("fill", buildingColor)
+                    .text(building.type.charAt(0).toUpperCase() + building.type.slice(1));
+            });
+
+            // Collect all events for positioning
+            const allEvents = [];
+            buildingData.forEach((building, buildingIndex) => {
+                building.events.forEach(event => {
+                    allEvents.push({
+                        ...event,
+                        building: building,
+                        buildingIndex: buildingIndex,
+                        isLeft: building.side === "left"
+                    });
+                });
+            });
+
+            // Group events by year for better positioning
+            const eventsByYear = d3.group(allEvents, d => d.year);
+            
+            // Draw events with collision avoidance
+            eventsByYear.forEach((yearEvents, year) => {
+                const baseY = yScale(year);
+                
+                // Separate left and right events
+                const leftEvents = yearEvents.filter(e => e.isLeft);
+                const rightEvents = yearEvents.filter(e => !e.isLeft);
+                
+                // Position left events
+                leftEvents.forEach((event, index) => {
+                    const eventX = centerX - 25 - (index * 15);
+                    const eventY = baseY + (index * 3 - (leftEvents.length - 1) * 1.5);
+                    
+                    drawEvent(g, event, eventX, eventY, yScale, centerX, cardWidth, startYear);
+                });
+                
+                // Position right events
+                rightEvents.forEach((event, index) => {
+                    const eventX = centerX + 25 + (index * 15);
+                    const eventY = baseY + (index * 3 - (rightEvents.length - 1) * 1.5);
+                    
+                    drawEvent(g, event, eventX, eventY, yScale, centerX, cardWidth, startYear);
+                });
+            });
+        }
+
+        function drawEvent(g, event, eventX, eventY, yScale, centerX, cardWidth, startYear) {
+            const building = event.building;
+            const isLeft = event.isLeft;
+            const cardX = isLeft ? centerX - cardWidth - 100 : centerX + 100;
+            const cardY = yScale(startYear) + (event.buildingIndex * 90) + 80;
+            const cardHeight = 60;
+            const buildingColor = buildingTypeColors[building.type];
+            
+            // Draw event dot
+            const eventDot = g.append("circle")
+                .attr("class", "event-dot")
+                .attr("cx", eventX)
+                .attr("cy", eventY)
+                .attr("r", timelineConfig.eventDotRadius)
+                .attr("fill", eventColors[event.type])
+                .attr("stroke", buildingColor)
+                .attr("stroke-width", 3)
+                .attr("data-building-index", event.buildingIndex);
+
+            // Add year label inside the event dot
+            g.append("text")
+                .attr("class", "event-year-label")
+                .attr("x", eventX)
+                .attr("y", eventY)
+                .attr("data-building-index", event.buildingIndex)
+                .text(event.year);
+
+            // Connect event to building with thick, colored line
+            const connectionLine = g.append("line")
+                .attr("class", "event-connection")
+                .attr("x1", eventX)
+                .attr("y1", eventY)
+                .attr("x2", cardX + (isLeft ? cardWidth : 0))
+                .attr("y2", cardY + cardHeight/2)
+                .attr("stroke", buildingColor)
+                .attr("stroke-width", 3)
+                .attr("opacity", 0.7)
+                .attr("data-building-index", event.buildingIndex);
+
+            // Add hover effects for better tracking
+            eventDot
+                .on("mouseover", function(mouseEvent) {
+                    // Highlight all elements for this building
+                    g.selectAll(`[data-building-index="${event.buildingIndex}"]`)
+                        .attr("stroke-width", 4)
+                        .attr("opacity", 1);
+                    
+                    showTooltip(mouseEvent, `
+                        <strong>${building.name}</strong> ${buildingIcons[building.type]}<br>
+                        <strong>${event.year}</strong> - ${event.type.replace('_', ' ')}<br>
+                        ${event.description}
+                    `);
+                })
+                .on("mouseout", function() {
+                    // Reset highlighting
+                    g.selectAll(".event-dot")
+                        .attr("stroke-width", 3);
+                    g.selectAll(".event-connection")
+                        .attr("stroke-width", 3)
+                        .attr("opacity", 0.7);
+                    g.selectAll(".building-card")
+                        .attr("stroke-width", 2);
+                    
+                    hideTooltip();
+                });
+        }
+
+        // Tooltip functions
+        const tooltip = d3.select("#tooltip");
+
+        function showTooltip(event, content) {
+            tooltip
+                .style("opacity", 1)
+                .html(content)
+                .style("left", (event.pageX + 15) + "px")
+                .style("top", (event.pageY - 15) + "px");
+        }
+
+        function hideTooltip() {
+            tooltip.style("opacity", 0);
+        }
+    </script>
+</body>
+</html>
